@@ -1,0 +1,2 @@
+name,type,stimuli,location,responses,delay,text
+Intr_text,instruction,"Instr_welcome,Alien_greet",,,,This is Lumi. He will be teaching you about the language spoken on his planet. Say 'hi' to Lumi!
