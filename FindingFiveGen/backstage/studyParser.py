@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-
-### trialParser.py
-# author: Yiyun Zhao
-# created: May 2019
-# last modified by: Yiyun
-# last modified on: 2019-May-21
-
 import csv
 from collections import defaultdict, OrderedDict
 #from backstage import MicrophoneCheck as MC

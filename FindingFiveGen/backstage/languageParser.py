@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 ### languageParser.py
-# author: Noah R Nelson, Yiyun Zhao
+# author: Noah R Nelson
 # created: September 2018
 # last modified by: Yiyun 
-# last modified on: 2019-May-21
+# last modified on: 2019-Feb-26
 
 # Major Modification:
 # Change the data structure to Dictionary so the content relies on the precise keys rather than positions

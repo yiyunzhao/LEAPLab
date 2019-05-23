@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 ### stimuli.py
-# author: Noah R Nelson,Yiyun Zhao
+# author: Noah R Nelson
 # created: August 2018
-# last modified by: Yiyun
-# last modified on: 2019-May-21
+# last modified by: Noah
+# last modified on: 2018-11-06
 
 """ Create and build stimulus objects for a FindingFive study """
 

@@ -2,11 +2,11 @@
 
 ### FindingFiveObjectClasses.py
 
-## author: Noah R Nelson,Yiyun Zhao
+## author: Noah R Nelson
 ## created: April 2017
 
-## last modified by: Yiyun
-## last modified on: 2019 May 21
+## last modified by: Noah
+## last modified on: 2018-11-05
 
 # This module contains custom object classes defining FindingFive objects.
 
@@ -490,7 +490,8 @@ class ImgStim(Stimulus):
     def __init__(self):
         Stimulus.__init__(self)
         self.type = 'image'
-        self._width = '200px'
+        #self._width = '200px'
+        self.width = '200px'
 
     @property
     def width(self):
@@ -530,7 +531,8 @@ class VidStim(Stimulus):
     def __init__(self):
         Stimulus.__init__(self)
         self.type = 'video'
-        self._width = '400px'
+        #self._width = '200px'
+        self.width = '400px'
         self._visible = True
         self._barrier = False # zyy
 

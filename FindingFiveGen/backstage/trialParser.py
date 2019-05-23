@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-
-### trialParser.py
-# author: Yiyun Zhao
-# created: May 2019
-# last modified by: Yiyun
-# last modified on: 2019-May-21
-
 import re
 from backstage import errors, trialTemplates, stimuli, responses
 #from backstage import processTrials
@@ -61,7 +53,7 @@ def feedback_checker(trial,feedback):
 	return feedback
 
 
-def create_stimuli(trial,ling_unit,stimuli_nature,need_text,need_aud=True,promp=None):
+def create_stimuli(name,trial,ling_unit,stimuli_nature,need_text,need_aud=True,promp=None):
 	# three types of stimuli within a trial are possible
 	vis, aud = None, None
 
@@ -75,19 +67,49 @@ def create_stimuli(trial,ling_unit,stimuli_nature,need_text,need_aud=True,promp=
 	elif ling_unit in ['Phrases']:
 		content_vis = trial[0]
 		if need_aud:
-			PpType, PpNom = trial[5].split(',')
+			try:
+				PpType, PpNom = trial[5].split(',')
+			except:
+				raise Exception("Please Specify PpType, PpNom at line",name)
 			content_lumese,_ = lumese.ComplexNoun(getString(content_vis),PpType=PpType,PpNom=PpNom)
 	
 	# sentences 
-	else:
+	elif ling_unit in ['Sentences']:
 		content = trial[0:3]
 		content_vis = '_'.join([i for i in content if i])
+		wd_info, pp_info,case_info = trial[3], trial[5], trial[6]
+
 		if need_aud:
-			wordorder = trial[3]
-			case,position = trial[4].split(',')
-			PpType, PpNom = trial[5].split(',')
+
+			# get word order 
+			if wd_info:
+				wordorder = trial[3]
+			else: 
+				raise Exception('Sentence need word order specified!')
+				
+			# get the case information
+
+			if case_info == 'NCM' or not case_info:
+				case,position = None,None
+				pass
+			else:
+				try:
+					case,position = trial[6].split(',')
+				except:
+					raise Exception('Please specify case information: \n 1. case on which element \n 2. suffix or prefix \n in this format:SNOUN,suffix')
+
+			# get the preposition type if there is one
+			if not pp_info:
+				PpType,PpNom = None, None
+			else:
+				try:
+					PpType, PpNom = trial[5].split(',')
+				except:
+					raise Exception('Please specify complete adposition information: \n 1. preposition or postposition \n 2. prenominal or postnominal')
 			clean_content = [getString(i) for i in content]
 			content_lumese,_ = lumese.Sentence(clean_content,wordorder,case,position,PpType,PpNom)
+	else:
+		raise Exception('Undefined ling_unit found, please select among (nouns,verbs,adpositions,adjectives,mix,phrase,sentences).')
 
 	# visual stimuli:
 	if not stimuli_nature:
@@ -136,7 +158,6 @@ def create_choices(trial,ling_unit,stimuli_nature,feedback, **kwargs):
 
 	response_collection = None
 	stim_collection =[]
-	print(vid)
 	if stimuli_nature == 'image':
 		for i in vid:
 			vis = stimuli.image(i)
@@ -263,7 +284,7 @@ def learn(content,name,need_text,**kwargs):
 
 		else:
 			# create main trial stimuli (questions)
-			this_trial_stimuli = create_stimuli(trial,ling_unit,stimuli_nature, need_text)
+			this_trial_stimuli = create_stimuli(name,trial,ling_unit,stimuli_nature, need_text)
 
 			# create trial templates and no response needed
 			trialTemplates.exposure(learn_template_name,this_trial_stimuli,need_text)
@@ -302,8 +323,7 @@ def understand(content,name,need_text,**kwargs):
 		else:
 			# create main trial stimuli (which does not contain the visual stimuli)
 			this_trial_name = '_'.join([name,ling_unit,'trial',str(indx),trial[0]])
-			this_trial_stimuli = create_stimuli(trial,ling_unit, None, need_text)
-			print(this_trial_stimuli)
+			this_trial_stimuli = create_stimuli(name,trial,ling_unit, None, need_text)
 			this_trial_response = create_choices(trial,ling_unit,stimuli_nature,feedback=feedback)
 			trialTemplates.comprehension(this_trial_name, this_trial_stimuli, this_trial_response,need_text)
 			main.append(this_trial_name)
@@ -344,11 +364,8 @@ def speak(content,name,need_text,**kwargs):
 
 		else:
 			# create main trial stimuli (which does not contain the visual stimuli)
-			print(trial)
 			this_trial_promp = trial[10] # change the position, origin is trial[3]
-			print(this_trial_promp)
-			this_trial_stimuli = create_stimuli(trial,ling_unit,stimuli_nature,need_text,promp=this_trial_promp)
-			print(this_trial_stimuli)
+			this_trial_stimuli = create_stimuli(name,trial,ling_unit,stimuli_nature,need_text,promp=this_trial_promp)
 			speak_templates.append(this_trial_stimuli)
 			feedback = feedback_checker(trial,feedback)
 			target_aud = this_trial_stimuli.pop(1)

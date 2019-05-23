@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 ### trialTemplates.py
-# author: Noah R Nelson,Yiyun Zhao
+# author: Noah R Nelson
 # created: August 2018
-# last modified by: Yiyun
-# last modified on: 2019-May-21
+# last modified by: Noah
+# last modified on: 2018-11-06
 
 """ Handle trial template objects and output file for a FindingFive study """
 
@@ -143,7 +143,6 @@ def create_survey_trial(name,stimuli,response, **kwargs):
     tt.stimuli = stimuli
 
     # other settings
-    print(kwargs.items())
     for key, value in kwargs.items():
         setattr(tt, key, value)
     template_objects[name] = tt

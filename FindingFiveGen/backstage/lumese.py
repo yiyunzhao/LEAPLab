@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 ### lumese.py
-# author: Noah R Nelson, Yiyun Zhao
+# author: Noah R Nelson
 # created: August 2018
 # last modified by: Yiyun Zhao
-# last modified on: 2019-May-21
+# last modified on: 2019-Feb-26
 
 """ Parse /*phrases*/ and translate to 'lumese' for audio files """
 """ Phrases in StudyInput are encoded in this way: chefOnBlueSkateboard; chefOnTable; BlueTable; """
@@ -27,7 +27,6 @@ lower_first_letter = lambda s: s[:1].lower() + s[1:] if s else ''
 upper_first_letter = lambda s: s[:1].upper() + s[1:] if s else ''
 
 
-print(LP.Info)
 
 #***************Simple Words **********************************
 def SimpleWord(content, lingUnit, input_line_number=None):
@@ -71,7 +70,7 @@ def ParsePhrase(ComplexNoun, input_line_number=None):
 
     # initialize part of speech variables
     head_noun, adpos, adj, other_noun = None, None, None, None
-    
+    print(words)
     my_phrase = []
     ind = 0
     try:
@@ -187,7 +186,9 @@ def ComplexNoun(ComplexNoun, CaseMarker = None, PpType = None, PpNom = None, lin
     """ didn't pass the order information yet, probably for the future use (e.g.,case marking on complex Nouns)"""
     
     my_phrase = ParsePhrase(ComplexNoun, line_number)
+    #print('my_phrase',my_phrase)
     audio, order = ReorderPhrase(my_phrase, line_number, CaseMarker, PpType, PpNom)
+    #print(audio, order)
     return audio, order
 
 
@@ -218,12 +219,13 @@ def CasePhrase(sequence,wordorder,target,CaseMarker,position):
     return '_'.join(sequence_list)
 
 
-def ParseSentence(sentence,CaseMarker, position, PpType, PpNom, line_number):
+def ParseSentence(sentence,CaseMarker=None, position=None, PpType=None, PpNom=None, line_number=None):
     
     # check whether the subject or object involves adpositional phrase
 
     ####### Translatetion Part #######
     # 1. translate subject
+    #print("Parse Sentence")
     Subject, Object, Verb = sentence[0:3]
     Subject_lumese, Subject_order, Object_lumese, Object_order, Verb_lumese = None,None,None,None,None
 
@@ -255,8 +257,10 @@ def ParseSentence(sentence,CaseMarker, position, PpType, PpNom, line_number):
         raise Exception('Verb is missing in the sentence')
 
 
+
+
     ####### Adding the caseMarker #########
-    if CaseMarker == 'NCM' or not caseMarker:
+    if CaseMarker == 'NCM' or not CaseMarker:
         pass
     else:
         # mark the subject 
@@ -264,8 +268,10 @@ def ParseSentence(sentence,CaseMarker, position, PpType, PpNom, line_number):
             try:
                 if Subject_order:
                     Subject_lumese = CasePhrase(Subject_lumese,Subject_order,'headNoun',CaseMarker,position)
+                    #print("Subj",Subject_lumese)
                 else:
                     Subject_lumese = CaseWord(Subject_lumese,CaseMarker,position)
+                    #print("Subj",Subject_lumese)
             except:
                 raise Exception("Cannot add the case to the subject")
         
@@ -273,14 +279,17 @@ def ParseSentence(sentence,CaseMarker, position, PpType, PpNom, line_number):
             try:
                 if Object_order:
                     Object_lumese = CasePhrase(Object_lumese,Object_order,'headNoun',CaseMarker,position)
+                    #print("Obj",Object_lumese)
                 else:
                     Object_lumese = CaseWord(Object_lumese,CaseMarker,position)
+                    #print("Obj",Object_lumese)
             except:
                 raise Exception('Cannot add the case to the object')
 
         if CaseMarker in ['SVERB',"OVERB"]:
             try:
                 Verb_lumese = CaseWord(Verb_lumese,CaseMarker,position)
+                #print("Verb",Verb_lumese)
             except:
                 raise Exception('Cannot add the case to the verb')
 
@@ -296,12 +305,14 @@ def ReorderSentence(my_sentence, wordorder,line_number):
     return orderedSent, wordorder
     
 
-def Sentence(sentence, wordorder,CaseMarker = None, position=None, PpType = None, PpNom = None, line_number = None):
+def Sentence(sentence, wordorder, CaseMarker = None, position=None, PpType = None, PpNom = None, line_number = None):
     """Parse a phrase or sentences noun into component words and rebuild into Lumese"""
     """ didn't pass the order information yet, probably for the future use (e.g.,case marking on complex Nouns)"""
     
-    my_sentence = ParseSentence(sentence, CaseMarker, PpType, PpNom,line_number)
+    my_sentence = ParseSentence(sentence, CaseMarker, position, PpType, PpNom,line_number)
+    #print("mysent:",my_sentence)
     audio,order = ReorderSentence(my_sentence, wordorder,line_number)
+    #print("audio:",audio)
     return audio, order
 
 

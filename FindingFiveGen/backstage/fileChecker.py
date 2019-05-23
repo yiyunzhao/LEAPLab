@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ### fileChecker.py
-# author: Noah R Nelson, Yiyun Zhao
+# author: Noah R Nelson
 # created: July 2018
 # last modified by: Noah
 # last modified on: 2018-11-06
