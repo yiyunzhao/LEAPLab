@@ -30,7 +30,7 @@ upper_first_letter = lambda s: s[:1].upper() + s[1:] if s else ''
 
 #***************Simple Words **********************************
 def SimpleWord(content, lingUnit, input_line_number=None):
-    if lingUnit == 'mix':
+    if lingUnit.lower() == 'mix':
         vocabulary = LP.Info['lexicon']['master_lexicon'] # this attribute is inherited in the LanguageParser.py
     else:
         vocabulary = LP.Info['lexicon'][lingUnit.lower()]
@@ -70,7 +70,6 @@ def ParsePhrase(ComplexNoun, input_line_number=None):
 
     # initialize part of speech variables
     head_noun, adpos, adj, other_noun = None, None, None, None
-    print(words)
     my_phrase = []
     ind = 0
     try:

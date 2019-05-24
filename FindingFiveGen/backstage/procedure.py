@@ -23,7 +23,7 @@ def block(info, covers, templates, ends, **kwargs):
     b.trial_templates = templates
     b.end_trials = ends
     #if 'prod' in label_info and feedback == True:
-    if ling_unit.lower().startswith("sent") and feedback == True:
+    if name.lower().startswith("speak") and feedback == "FB":
 
         b.order = 'alternate'
     else: b.order = 'random'

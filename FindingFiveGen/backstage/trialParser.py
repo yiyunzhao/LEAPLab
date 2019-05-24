@@ -38,10 +38,22 @@ def normalizeLingUnit(string):
 		raise Exception('invalid input LingUnit at block {' + block_name +'} either adding a new lingUnit in the normalizedLingUnit at trialParser.py or change the block lingUnit')
 	return lingUnit
 
-def feedback_checker(trial,feedback):
+def feedback_checker(trial,inputfeedback):
 	# deal with feedback
 	# globally specified feedback
-	feedback = bool(feedback)
+	if inputfeedback:
+		if inputfeedback.upper() == 'FB':
+			feedback= True
+		elif inputfeedback.upper() == "NFB":
+			feedback = False
+		else:
+			raise Exception("feedback column H has undefined inputs, please select either FB or NFB.")
+	else:
+		feedback = False
+
+
+
+	#feedback = bool(feedback)
 	# if specified in line then overwrite the global one
 	if trial[7]:
 		if trial[7] == 'NFB':
@@ -50,6 +62,7 @@ def feedback_checker(trial,feedback):
 			feedback = True
 		else:
 			raise Exception('Invalid input in the feedback column in line. Please select (NFB) or FB.')
+
 	return feedback
 
 
@@ -133,15 +146,18 @@ def create_stimuli(name,trial,ling_unit,stimuli_nature,need_text,need_aud=True,p
 		stim_collection.append(vis)
 	if aud:
 		stim_collection.append(aud)
+
+
 	if promp: # promp currently is limited to the simple words
-		promp_lumese = lumese.SimpleWord(getString(promp),ling_unit.lower())
+		promp_lumese = lumese.SimpleWord(getString(promp),"Mix")
 		promp_aud = stimuli.audio(promp_lumese,need_text)
 		stim_collection.append(promp_aud)
 	return stim_collection
 
-def create_choices(trial,ling_unit,stimuli_nature,feedback, **kwargs):
+def create_choices(name,indx,trial,ling_unit,stimuli_nature,feedback, **kwargs):
 	feedback = feedback_checker(trial,feedback)
 	vid = []
+	foils = []
 	if ling_unit in ["Sentences"]:
 		target =  '_'.join([i for i in trial[0:3] if i]) 
 		foils = trial[9].split(";")
@@ -151,7 +167,12 @@ def create_choices(trial,ling_unit,stimuli_nature,feedback, **kwargs):
 		if trial[9]: 
 			foils = trial[9].split(";")
 		else:
-			foils = [i for i in trial[1:7] if i]
+			foils = trial[1:5]
+
+	foils = [i for i in foils if i]
+
+	if not foils:
+		raise Exception('No foils specified in column J! for block '+ name+' row '+ str(indx+1))
 	vid.append(target)
 	vid+=foils
 
@@ -324,7 +345,7 @@ def understand(content,name,need_text,**kwargs):
 			# create main trial stimuli (which does not contain the visual stimuli)
 			this_trial_name = '_'.join([name,ling_unit,'trial',str(indx),trial[0]])
 			this_trial_stimuli = create_stimuli(name,trial,ling_unit, None, need_text)
-			this_trial_response = create_choices(trial,ling_unit,stimuli_nature,feedback=feedback)
+			this_trial_response = create_choices(name,indx,trial,ling_unit,stimuli_nature,feedback=feedback)
 			trialTemplates.comprehension(this_trial_name, this_trial_stimuli, this_trial_response,need_text)
 			main.append(this_trial_name)
 
@@ -367,7 +388,7 @@ def speak(content,name,need_text,**kwargs):
 			this_trial_promp = trial[10] # change the position, origin is trial[3]
 			this_trial_stimuli = create_stimuli(name,trial,ling_unit,stimuli_nature,need_text,promp=this_trial_promp)
 			speak_templates.append(this_trial_stimuli)
-			feedback = feedback_checker(trial,feedback)
+			#feedback = feedback_checker(trial,feedback)
 			target_aud = this_trial_stimuli.pop(1)
 			# response
 			if need_text:
@@ -378,16 +399,19 @@ def speak(content,name,need_text,**kwargs):
 			# trial template
 			trialTemplates.production(produce_template_name, this_trial_stimuli, this_trial_response,need_text,**kwargs)
 
-			if feedback == True:
+			if feedback_checker(trial,feedback) == True:
 				stimuli.lumi()
 				feedback_audio= stimuli.feedback(target_aud,need_text)
+				target_image = this_trial_stimuli[0]
 				feedback_template = '{}Feedback'.format(produce_template_name)
-				trialTemplates.feedback(feedback_template, [target_image, feedback_audio], needs_text)
+				trialTemplates.feedback(feedback_template, [target_image, feedback_audio], need_text)
 
 
 	# create trials
-	
 	main.append(produce_template_name)
+	if feedback_checker(trial,feedback) == True:
+		main.append(feedback_template)
+	
 	return block_info, cover, main, end
 
 
