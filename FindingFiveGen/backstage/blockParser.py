@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-
-### trialParser.py
-# author: Yiyun Zhao
-# created: May 2019
-# last modified by: Yiyun
-# last modified on: 2019-May-21
-
 import csv
 from collections import defaultdict, OrderedDict
 from backstage import MicrophoneCheck as MC
@@ -68,7 +60,7 @@ def process_blockType(study_type,study_details,study_block):
 			## generate related trials using the information here welcome(block_contents)
 
 		# this block is used for comments
-		elif block_name.lower().startswith('com'):
+		elif block_name.lower().startswith('comp'):
 			TP.comments()
 			#block_info, cover_trials, main_trials, end_trials = TP.comment(block_value,block_name,need_text)
 			#print(block_value)

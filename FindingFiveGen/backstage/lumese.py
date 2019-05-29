@@ -192,13 +192,13 @@ def ComplexNoun(ComplexNoun, CaseMarker = None, PpType = None, PpNom = None, lin
 
 
 #*************** Sentences **********************************
-
-def CaseWord(word,CaseMarker,position):
+def CaseWord(word,case,position):
+#def CaseWord(word,CaseMarker,position):
     
-    try:
-        case = LP.Info['lexicon']['case_markers'][CaseMarker]
-    except:
-        raise Exception(CaseMarker+' does not exisit')
+    #try:
+    #    case = LP.Info['lexicon']['case_markers'][CaseMarker]
+    #except:
+    #    raise Exception(CaseMarker+' does not exisit')
 
     if position.lower().startswith('pre'):
         casedword = case+word
@@ -264,30 +264,59 @@ def ParseSentence(sentence,CaseMarker=None, position=None, PpType=None, PpNom=No
     else:
         # mark the subject 
         if CaseMarker in ['SNOUN','CM','SVERB']:
+            # get the case
+            try:
+                if CaseMarker == 'SNOUN':
+                    case = LP.Info['lexicon']['case_markers'][CaseMarker]
+                elif CaseMarker == 'CM':
+                    case = LP.Info['lexicon']['case_markers'][CaseMarker].split(',')[0]
+                else:
+                    case = LP.Info['lexicon']['case_markers'][CaseMarker].split(',')[0]
+            except:
+                raise Exception('Invalid input of '+ CaseMarker+ ' Do you specify the case marker correctly in the language input?')
+
+            # get the subject
             try:
                 if Subject_order:
-                    Subject_lumese = CasePhrase(Subject_lumese,Subject_order,'headNoun',CaseMarker,position)
+                    Subject_lumese = CasePhrase(Subject_lumese,Subject_order,'headNoun',case,position)
                     #print("Subj",Subject_lumese)
                 else:
-                    Subject_lumese = CaseWord(Subject_lumese,CaseMarker,position)
+                    Subject_lumese = CaseWord(Subject_lumese,case,position)
                     #print("Subj",Subject_lumese)
             except:
                 raise Exception("Cannot add the case to the subject")
         
         if CaseMarker in ['ONOUN', "CM","OVERB"]:
             try:
+                if CaseMarker == 'ONOUN':
+                    case = LP.Info['lexicon']['case_markers'][CaseMarker]
+                elif CaseMarker == 'CM':
+                    case = LP.Info['lexicon']['case_markers'][CaseMarker].split(',')[1] # the second 
+                else:
+                    case = LP.Info['lexicon']['case_markers'][CaseMarker].split(',')[0] # the first
+            except:
+                raise Exception('Invalid input of '+ CaseMarker+ ' Do you specify the case marker correctly in the language input?')
+            try:
                 if Object_order:
-                    Object_lumese = CasePhrase(Object_lumese,Object_order,'headNoun',CaseMarker,position)
+                    Object_lumese = CasePhrase(Object_lumese,Object_order,'headNoun',case,position)
                     #print("Obj",Object_lumese)
                 else:
-                    Object_lumese = CaseWord(Object_lumese,CaseMarker,position)
+                    Object_lumese = CaseWord(Object_lumese,case,position)
                     #print("Obj",Object_lumese)
             except:
                 raise Exception('Cannot add the case to the object')
 
         if CaseMarker in ['SVERB',"OVERB"]:
             try:
-                Verb_lumese = CaseWord(Verb_lumese,CaseMarker,position)
+                if CaseMarker == 'SVERB':
+                    case = LP.Info['lexicon']['case_markers'][CaseMarker].split(',')[1]
+                else:
+                    case = LP.Info['lexicon']['case_markers'][CaseMarker].split(',')[1]
+            except:
+                raise Exception('Invalid input of '+ CaseMarker+ ' Do you specify the case marker correctly in the language input?')
+
+            try:
+                Verb_lumese = CaseWord(Verb_lumese,case,position)
                 #print("Verb",Verb_lumese)
             except:
                 raise Exception('Cannot add the case to the verb')
