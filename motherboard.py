@@ -57,14 +57,16 @@ outputs.add_argument('--praat', metavar = '<praat output txt>', default = 'praat
 optional = parser.add_argument_group('additional optional arguments')
 optional.add_argument('-h', '--help', action = 'help',
                       help = 'show this help message and exit')
-optional.add_argument('-d', '--directory', metavar = '<directory>', default = current_dir,
+optional.add_argument('-din', '--directoryin', metavar = '<directoryin>', default = current_dir,
+                      help = 'The name of a directory in which to find the input files and save the output files (path must be relative to the current directory). Default: current working directory')
+optional.add_argument('-dout', '--directoryout', metavar = '<directoryout>', default = None,
                       help = 'The name of a directory in which to find the input files and save the output files (path must be relative to the current directory). Default: current working directory')
 optional.add_argument('-o', '--overwrite', action = 'store_true',
                       help = 'Including this flag automatically writes over existing files with the same name as an output file. Excluding it prompts the user first')
 
 
 args = parser.parse_args()
-
+print(args)
 # 2. Fetch file names from the command line and validate them
 study_input_file, language_input_file, stimuli_file, responses_file, trials_file, procedure_file, praat_file = fileChecker.main(args)
 
@@ -75,8 +77,8 @@ errors.language_input_file = language_input_file
 # 4. Call the language parser, set language info (see backstage/languageParser.py)
 #details, grammar, lexicon = languageParser.main(language_input_file)
 # details = session number, list number, grammar number
-studyInfo = studyParser.readStduy('study_design_test.csv')
-language = languageParser.main('input_language_test.csv')
+studyInfo = studyParser.readStduy(study_input_file)
+language = languageParser.main(language_input_file)
 blockParser.blockProcessor(studyInfo)
 
 # 6. Write the outputs
@@ -87,3 +89,4 @@ procedure.output(procedure_file)
 praat.output(praat_file)
 
 exit()
+

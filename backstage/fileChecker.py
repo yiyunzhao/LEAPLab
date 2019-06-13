@@ -17,13 +17,17 @@ def main(args):
     outputs = [args.stimuli, args.responses, args.trials, args.procedure, args.praat]
 
     # handle --directory (-d) flag
-    my_directory = args.directory
-    if my_directory is not None:
-        inputs = [os.path.join(my_directory, file) for file in inputs]
+    my_directory_in = args.directoryin
+    my_directory_out = args.directoryout
+    if my_directory_in is not None:
+        inputs = [os.path.join(my_directory_in, file) for file in inputs]
+    if my_directory_out is None:
+        my_directory_out = my_directory_in
+
 
     # handle --overwrite (-o) flag
     overwrite = args.overwrite
-    outputs = check_file_names(my_directory, outputs, overwrite)
+    outputs = check_file_names(my_directory_out, outputs, overwrite)
 
     my_files = inputs + outputs
     return my_files
