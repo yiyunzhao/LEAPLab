@@ -38,7 +38,7 @@ def audio(name, needs_text, **kwargs):
         txt = FF.TextStim()
         txt.name = name + '_text'
         #txt.content = name.replace('_',' ')
-        txt.content = name
+        txt.content = name.replace('_',' ')
         txt.size = '2em'
         txt.alignment = 'center'
         # rename the audio stim for clarity

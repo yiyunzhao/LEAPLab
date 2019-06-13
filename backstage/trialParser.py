@@ -226,7 +226,7 @@ def welcome(content,name,need_text,**kwargs):
 
 
 	## process the contents:
-	for indx,content in enumerate(block[1:]):
+	for indx,content in enumerate(content[1:]):
 		instr_content = content[1]
 		instr_name = name + 'Instr'+ str(indx+1)
 		my_instr_template = instruction(instr_name, instr_content)

@@ -41,8 +41,8 @@ def create_trials(row, headers, cover_trials, trial_templates, end_trials):
 
 	instr_name, image_name = t_stimuli
 	stimuli.text(instr_name,stim_text)
-	stimuli.image(image_name,content = 'alien_say1.png',width='50%')
-	trialTemplates.instruction(t_name,t_stimuli)
+	stimuli.image(image_name,content = 'alien_say1.png',width='70%')
+	trialTemplates.instruction(t_name,[[image_name+'_img',instr_name+'_text']])
 
 def process(text_check):
 	cover_trials, trial_templates, end_trials = [], [], []
@@ -53,7 +53,7 @@ def process(text_check):
 			headers=row
 		else:
 			create_trials(row,headers,cover_trials,trial_templates,end_trials)
-	procedure.block(['Text_Check','',[],'',False], cover_trials, trial_templates, end_trials, order = 'fixed')
+	procedure.block(['TextCheck','',[],'',False], cover_trials, trial_templates, end_trials, order = 'fixed')
 	#procedure.block_seq=seq
 
 def create(check_type):

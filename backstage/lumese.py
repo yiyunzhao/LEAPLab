@@ -11,7 +11,7 @@
 
 # search dictionary
 # code marker: [!?Q] --> doubts  
-
+# How we should approach the praat is another problem
 
 
 

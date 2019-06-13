@@ -93,6 +93,7 @@ def process_blockType(study_type,study_details,study_block):
 
 	# update block_sequence
 	procedure.block_seq = block_sequence
+	print(procedure.block_seq)
 
 
 
