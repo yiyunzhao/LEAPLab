@@ -36,11 +36,14 @@ def readStduy(study_input_file):
 		if not content[0].startswith('#') and content[0]:
 			head = content[0].lower()
 			if head.startswith('welcome') or head.startswith('comments') or head.startswith('speak') or \
-			head.startswith('learn') or head.startswith('survey') or head.startswith('understand'):
+			head.startswith('learn') or head.startswith('survey') or head.startswith('understand') or head.startswith('afcsurvey'):
 				block = head
 				BlockInformation[block] = [content]
 			else:
-				BlockInformation[block].append(content)
+				try:
+					BlockInformation[block].append(content)
+				except:
+					raise ValueError("undefined block name?")
 	studyInfo['Blocks'] = BlockInformation
 
 	return studyInfo

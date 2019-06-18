@@ -70,6 +70,25 @@ def create_AFC(choices,stimuli_nature,instruction,**kwargs):
 
     return afc.name
 
+
+
+def create_AFCtext(target,choices,instruction,**kwargs):
+    afc = FF.ChoiceResponse()
+    afc.name = '_'.join(choices) + '_target_'+target
+    afc.target = target
+    afc.instruction = instruction
+    afc.choices = choices
+    afc.locations = 'fixed'
+
+    for key, value in kwargs.items():
+        setattr(afc, key, value)
+    #response_objects[target] = afc
+    response_objects[afc.name] = afc
+
+    return afc.name
+
+
+
 def create_4AFC(target, foils, **kwargs):
     afc = FF.ChoiceResponse()
     afc.name = target

@@ -67,6 +67,7 @@ class Block(FFobject):
     """
 
     @property
+    #def trial_templates(self):
     def cover_trials(self):
         return self._cover_trials
     @cover_trials.setter
@@ -113,6 +114,54 @@ class Block(FFobject):
         if not isinstance(value, int):
             raise TypeError('Pattern repeat must be entered as an integer')
         self._repeat = value
+
+
+# Conditional Branching
+class BranchingBlock(Block):
+    @property
+    def method(self):
+        return self._method
+    @method.setter
+    def method(self,value):
+        if value == 'accuracy' or value == 'match':
+            self._method = value
+        else:
+            raise ValueError('The method of branching block must be "accuracy" or "match"')
+    @property
+    def triggers(self):
+        return self._triggers
+
+    @triggers.setter
+    def triggers(self,value):
+        if not isinstance(value, list):
+            raise TypeError('Triggers must be entered in a list')
+        if len(value) == 0:
+            raise ValueError('You must define at least one trigger to condition on in a list')
+        self._triggers = value
+        # [{trial_template: response}]
+    @property
+    def min_score(self):
+        return self._min_score
+    @min_score.setter
+    def min_score(self,value):
+        if self._method == 'accuracy' and isinstance(value,float):
+            self._min_score = value
+        else:
+            raise ValueError('min_score has to be an integer and is only valid under accuracy method')
+
+    @property
+    def branches(self):
+        return self._branches
+
+    @branches.setter
+    def branches(self,value):
+        if isinstance(value, dict):
+            if len(value) > 2 and self._method!= 'match':
+                raise ValueError('Multiple branches only allowed under "match" method')
+            else:
+                self._branches = value
+        else:
+            raise ValueError('branches needed to be entered as a dictionary')
 
 
 class Template(FFobject):

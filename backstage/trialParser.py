@@ -1,9 +1,11 @@
 import re
+from collections import OrderedDict
 from backstage import errors, trialTemplates, stimuli, responses
 #from backstage import processTrials
 from backstage import lumese
 
 
+#### Utilities #########
 def getNumber(string):
 	s = re.search(r'\d+', string)
 	if s:
@@ -38,6 +40,31 @@ def normalizeLingUnit(string):
 		raise Exception('invalid input LingUnit at block {' + block_name +'} either adding a new lingUnit in the normalizedLingUnit at trialParser.py or change the block lingUnit')
 	return lingUnit
 
+
+def bracnhesReform(branches):
+	branchlist = branches.split(';')
+	branchdict = OrderedDict()
+	for b in branchlist:
+		con, bs = b.split(":")
+		con = ''.join(con.split())
+		if bs.lower() in ['none','null','no','']:
+			brans = []
+		else:
+			brans =[''.join(i.lower().split()) for i in  bs.split(',')]
+		branchdict[con] = brans
+	return branchdict
+
+
+def conditionsReform(branches):
+	branchlist = branches.split(';')
+	branchdict = {}
+	for b in branchlist:
+		con, bs = b.split(":")
+		con = ''.join(con.split())
+		branchdict[con] = [bs]
+	return branchdict
+
+####### helper functions #################
 def feedback_checker(trial,inputfeedback):
 	# deal with feedback
 	# globally specified feedback
@@ -199,11 +226,11 @@ def create_choices(name,indx,trial,ling_unit,stimuli_nature,feedback, **kwargs):
 
 
 def instruction(name, content):
-    instr_stimulus = stimuli.text(name, content) # creates the stimulus object
-    template_name = name.replace('Instr','_instr') + '_Trial'
-    trialTemplates.instruction(template_name, instr_stimulus) # creates the trial template object
-
-    return template_name
+	stim = stimuli.Alienlumi()
+	instr_stimulus = stimuli.text(name, content) # creates the stimulus object
+	template_name = name.replace('Instr','_instr') + '_Trial'
+	trialTemplates.instruction(template_name, instr_stimulus) # creates the trial template object
+	return template_name
 
 
 #######################################
@@ -221,8 +248,18 @@ def welcome(content,name,need_text,**kwargs):
 
 	# intialize elements
 	cover, main, end = [],[],[]
+	branch_info = []
 	_, repeat, ling_unit, stimuli_nature, foil, _, _, feedback = content[0][:8]
 	block_info = [name, repeat, ling_unit, feedback, need_text]
+
+	#branch_status
+	if content[0][11]: 
+		branch_info.append(content[0][11])
+	if content[0][12]:
+		branch_info.append(content[0][12].split(':'))
+	if content[0][13]:
+		branches = bracnhesReform(content[0][13])
+		branch_info.append(branches)
 
 
 	## process the contents:
@@ -231,16 +268,95 @@ def welcome(content,name,need_text,**kwargs):
 		instr_name = name + 'Instr'+ str(indx+1)
 		my_instr_template = instruction(instr_name, instr_content)
 		main.append(my_instr_template)
-	return block_info, cover, main, end
+	return block_info, cover, main, end,branch_info
 
 #---------survey block-------------#
-def survey(content,name,need_text,**kwargs):
+def AFCsurvey(content,name,need_text,**kwargs):
 	cover, main, end = [],[],[]
+	branch_info = []
 	_, repeat, ling_unit, stimuli_nature, foil, _, _, feedback = content[0][:8]
 	block_info = [name, repeat, ling_unit, feedback, need_text]
 
+	#branch_status
+	if content[0][11]: 
+		branch_info.append(content[0][11])
+	if content[0][12]:
+		branch_info.append(content[0][12].split(':'))
+	if content[0][13]:
+		branches = bracnhesReform(content[0][13])
+		branch_info.append(branches)
+
+	# process trials
+	choices_templates = []
+	triggers = []
+	branches = {}
+	for indx, trial in enumerate(content[1:]):
+
+		# create instruction cover trials 
+		if trial[0].lower().startswith('instr'):
+			instr_content = trial[1]
+			instr_name = name + 'Instr'+ str(indx+1)
+			my_instr_template = instruction(instr_name, instr_content)
+			
+			if indx < len(content[1:])/2:
+				cover.append(my_instr_template)
+			else:
+				end.append(my_instr_template)
+		
+		elif trial[0].lower().startswith('end'):
+			pass
+
+		else:
+			# create main trial stimuli (which does not contain the visual stimuli)
+			question_name,question_content,choices,target = trial[0],trial[1],trial[2],trial[3]
+			trig, condition = trial[11],trial[12]
+			#this_trial_name = '_'.join([name,'trial',str(indx),question_name])
+			question_name = '_'.join([name,question_name])
+			question_simulus = stimuli.text(question_name,question_content)
+			question_response = responses.create_AFCtext(target,choices.split(','),instruction='please select the answer that fits your situation',feedback=False)
+			trialTemplates.create_AFCsurvey_trial(question_name, [question_simulus], question_response)
+			main.append(question_name)
+
+
+
+			# updating the trigger information
+			if trig:
+				triggers.append({"trial_template":question_name, "response":question_response})
+
+			if condition:
+				contrans = conditionsReform(condition)
+				for key, val in contrans.items():
+					if key in branches:
+						branches[key]+= val
+					else:
+						branches[key] = val
+	
+	if triggers or branches:
+		branch_info.append(triggers)
+		branch_info.append(branches)
+
+	return block_info, cover, main, end, branch_info
+
+
+def survey(content,name,need_text,**kwargs):
+	cover, main, end = [],[],[]
+	branch_info = []
+	_, repeat, ling_unit, stimuli_nature, foil, _, _, feedback = content[0][:8]
+	block_info = [name, repeat, ling_unit, feedback, need_text]
+
+	#branch_status
+	if content[0][11]: 
+		branch_info.append(content[0][11])
+	if content[0][12]:
+		branch_info.append(content[0][12].split(':'))
+	if content[0][13]:
+		branches = bracnhesReform(content[0][13])
+		branch_info.append(branches)
+	
+
 	# process the stimuli 
 	survey_stimuli = []
+	triggers_collection = []
 	for indx, trial in enumerate(content[1:]):
 
 		# create instruction cover trials 
@@ -262,6 +378,7 @@ def survey(content,name,need_text,**kwargs):
 			question_name = '_'.join([name,question_name])
 			question_simulus = stimuli.text(question_name,question_content)
 			survey_stimuli.append(question_simulus)
+			trigger,condition = trial[10],trial[11]
 
 	# create trial name 
 	survey_template_name = name +'_Questions_Trial'
@@ -272,17 +389,29 @@ def survey(content,name,need_text,**kwargs):
 
 	# trial survey trials 
 	trialTemplates.create_survey_trial(survey_template_name,survey_stimuli,response,**kwargs)
-	return block_info, cover, main, end
+	return block_info, cover, main, end,branch_info
 
 #----------learn block------------------#
 def learn(content,name,need_text,**kwargs):
 	cover, main, end = [],[],[]
+	branch_info = []
 	_, repeat, ling_unit, stimuli_nature, _, _, _, feedback = content[0][:8]
+
+	#branch_status
+	if content[0][11]: 
+		branch_info.append(content[0][11])
+	if content[0][12]:
+		branch_info.append(content[0][12].split(':'))
+	if content[0][13]:
+		branches = bracnhesReform(content[0][13])
+		branch_info.append(branches)
+	
 	
 	# normalized the information
 	repeat = getNumber(repeat) # get the number out
 	ling_unit = normalizeLingUnit(ling_unit)
 	block_info = [name, repeat, ling_unit, feedback, need_text]
+
 
 
 	# process trials 
@@ -310,12 +439,13 @@ def learn(content,name,need_text,**kwargs):
 			# create trial templates and no response needed
 			trialTemplates.exposure(learn_template_name,this_trial_stimuli,need_text)
 	main.append(learn_template_name)
-	return block_info, cover, main, end
+	return block_info, cover, main, end, branch_info
 
 
 #--------------- Comprehension Block --------------#
 def understand(content,name,need_text,**kwargs):
 	cover, main, end = [],[],[]
+	branch_info = []
 	_, repeat, ling_unit, stimuli_nature, foil, _, _, feedback = content[0][:8]
 
 	# normalized the information
@@ -323,8 +453,19 @@ def understand(content,name,need_text,**kwargs):
 	ling_unit = normalizeLingUnit(ling_unit)
 	block_info = [name, repeat, ling_unit, feedback, need_text]
 
+	#branch_status
+	if content[0][11]: 
+		branch_info.append(content[0][11])
+	if content[0][12]:
+		branch_info.append(content[0][12].split(':'))
+	if content[0][13]:
+		branches = bracnhesReform(content[0][13])
+		branch_info.append(branches)
+
 	# process trials
 	understand_templates = []
+	triggers = []
+	branches = {}
 	for indx, trial in enumerate(content[1:]):
 
 		# create instruction cover trials 
@@ -344,23 +485,51 @@ def understand(content,name,need_text,**kwargs):
 		else:
 			# create main trial stimuli (which does not contain the visual stimuli)
 			this_trial_name = '_'.join([name,ling_unit,'trial',str(indx),trial[0]])
+			trig, condition = trial[11],trial[12]
 			this_trial_stimuli = create_stimuli(name,trial,ling_unit, None, need_text)
 			this_trial_response = create_choices(name,indx,trial,ling_unit,stimuli_nature,feedback=feedback)
 			trialTemplates.comprehension(this_trial_name, this_trial_stimuli, this_trial_response,need_text)
 			main.append(this_trial_name)
 
-	return block_info, cover, main, end
+
+						# updating the trigger information
+			if trig:
+				triggers.append({"trial_template":this_trial_name, "response":this_trial_response})
+
+			if condition:
+				contrans = conditionsReform(condition)
+				for key, val in contrans.items():
+					if key in branches:
+						branches[key]+= val
+					else:
+						branches[key] = val
+	
+	if triggers or branches:
+		branch_info.append(triggers)
+		branch_info.append(branches)
+
+	return block_info, cover, main, end, branch_info
 
 
 #--------------- Production Block --------------#
 def speak(content,name,need_text,**kwargs):
 	cover, main, end = [],[],[]
+	branch_info = []
 	_, repeat, ling_unit, stimuli_nature, foil, _, _, feedback = content[0][:8]
 
 	# normalized the information
 	repeat = getNumber(repeat) # get the number out
 	ling_unit = normalizeLingUnit(ling_unit)
 	block_info = [name, repeat, ling_unit, feedback, need_text]
+
+	#branch_status
+	if content[0][11]: 
+		branch_info.append(content[0][11])
+	if content[0][12]:
+		branch_info.append(content[0][12].split(':'))
+	if content[0][13]:
+		branches = bracnhesReform(content[0][13])
+		branch_info.append(branches)
 
 
 	# process trials
@@ -412,7 +581,7 @@ def speak(content,name,need_text,**kwargs):
 	if feedback_checker(trial,feedback) == True:
 		main.append(feedback_template)
 	
-	return block_info, cover, main, end
+	return block_info, cover, main, end, branch_info
 
 
 

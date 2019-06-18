@@ -129,6 +129,19 @@ def create_final_comments_trial():
     tt.responses = ['comment']
     template_objects[tt.name] = tt
 
+
+
+def create_AFCsurvey_trial(name, stimuli, response,**kwargs):
+    tt = FF.CompTemplate()
+    tt.name = name
+    tt.stimuli = stimuli
+    tt.responses = [response]
+    tt.force_response_delay = "passive"
+    tt.order = 'fixed'
+    for key, value in kwargs.items():
+        setattr(tt, key, value)
+    template_objects[name] = tt
+
 def create_survey_trial(name,stimuli,response, **kwargs):
     if name not in template_objects.keys(): # only create if first occurrence
         tt = FF.ProdTemplate()

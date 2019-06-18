@@ -1,0 +1,29 @@
+"barrier","color","content","alignment","name","type","width","size","visible"
+"","","This is Lumi. He will be teaching you about the language spoken on his planet. Say 'hi' to Lumi!","center","Instr_welcome_text","text","","",""
+"","","alien_say1.png","","Alien_greet_img","image","70%","",""
+"","","Do you like me?","center","afcsurvey_Question2_text","text","","",""
+"","","Is English your native language?","center","afcsurvey_Question1_text","text","","",""
+"","","alien_new.png","","Alien","image","70%","",""
+"","","TBD. Learn 1","center","learn1Instr1_text","text","","",""
+"","","ref.png","","ref_img","image","200px","",""
+"","","tlakapo","center","tlakapo_text","text","","2em",""
+false,"","tlakapo.mp3","","tlakapo_aud","audio","","",false
+"","","chef.png","","chef_img","image","200px","",""
+"","","forpa","center","forpa_text","text","","2em",""
+false,"","forpa.mp3","","forpa_aud","audio","","",false
+"","","bandit.png","","bandit_img","image","200px","",""
+"","","kmodu","center","kmodu_text","text","","2em",""
+false,"","kmodu.mp3","","kmodu_aud","audio","","",false
+"","","TBD. Learn 3.","center","learn3Instr1_text","text","","",""
+"","","RefOnRedSkateboard.png","","RefOnRedSkateboard_img","image","200px","",""
+"","","tlakapo sool redler lanferda","center","tlakapo_sool_redler_lanferda_text","text","","2em",""
+false,"","tlakapo_sool_redler_lanferda.mp3","","tlakapo_sool_redler_lanferda_aud","audio","","",false
+"","","ChefUnderTable.png","","ChefUnderTable_img","image","200px","",""
+"","","rizba bod forpa","center","rizba_bod_forpa_text","text","","2em",""
+false,"","rizba_bod_forpa.mp3","","rizba_bod_forpa_aud","audio","","",false
+"","","TBD. Learn 1","center","understand1Instr1_text","text","","",""
+"","","ref2.png","","ref2_img","image","200px","",""
+"","","ref3.png","","ref3_img","image","200px","",""
+"","","TBD. Learn 3.","center","understand3Instr1_text","text","","",""
+"","","TBD. Learn 3.","center","speak2Instr1_text","text","","",""
+"","","Thank you for taking the test!","center","welcome1Instr1_text","text","","",""

@@ -104,6 +104,15 @@ def feedback(name, needs_text, **kwargs):
     stimulus_objects[f.name] = f
     return f.name
 
+
+def Alienlumi():
+    a = FF.ImgStim()
+    a.name = 'Alien'
+    a.content = 'alien_new.png'
+    a.width = '70%'
+    stimulus_objects[a.name] = a
+
+
 def lumi():
     a = FF.ImgStim()
     a.name = 'Alien'
