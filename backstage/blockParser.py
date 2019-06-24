@@ -94,7 +94,6 @@ def process_blockType(study_type,study_details,study_block):
 		else:
 			raise Exception('Study block type is not correctly defined. \n Current allowed block types include: welcome, comments, survey,learn,understand,speak')
 
-		print(branch_info)
 
 
 		if not branch_info:
