@@ -350,7 +350,12 @@ def Sentence(sentence, wordorder, CaseMarker = None, position=None, PpType = Non
     my_sentence = ParseSentence(sentence, CaseMarker, position, PpType, PpNom,line_number)
     #print("mysent:",my_sentence, wordorder)
     #print(ReorderSentence_nocat(my_sentence,wordorder))
-    praat.praat_content.append(ReorderSentence_nocat(my_sentence,wordorder))
+
+    # add the sentence into the praat list
+    praat_sent_out = ReorderSentence_nocat(my_sentence,wordorder)
+    if praat_sent_out not in praat.praat_content:
+        praat.praat_content.append(praat_sent_out)
+    
     audio,order = ReorderSentence(my_sentence, wordorder,line_number)
     #print("audio:",audio)
     return audio, order
