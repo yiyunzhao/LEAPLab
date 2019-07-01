@@ -44,6 +44,9 @@ inputs.add_argument('study_input', metavar = '<study input csv>',
 inputs.add_argument('language_input', metavar = '<language input csv>',
                     help = 'The name of a CSV file defining the language input')
 outputs = parser.add_argument_group(title = 'output files (optional)')
+outputs.add_argument('-sdi','--soundidentifier', metavar ='<suffix>' ,default= '')
+outputs.add_argument('-imi','--imageidentifier', metavar ='<suffix>' ,default= '')
+outputs.add_argument('-vdi','--videoidentifier', metavar ='<suffix>' ,default= '')
 outputs.add_argument('-s', '--stimuli', metavar = '<stimuli output csv>', default = 'stimuli.csv',
                     help = 'The name of the CSV file defining the FindingFive stimuli. Default: "stimuli.csv"')
 outputs.add_argument('-r', '--responses', metavar = '<responses output csv>', default = 'responses.csv',
@@ -66,7 +69,7 @@ optional.add_argument('-o', '--overwrite', action = 'store_true',
 
 
 args = parser.parse_args()
-print(args)
+
 # 2. Fetch file names from the command line and validate them
 study_input_file, language_input_file, stimuli_file, responses_file, trials_file, procedure_file, praat_file = fileChecker.main(args)
 
@@ -81,8 +84,10 @@ studyInfo = studyParser.readStduy(study_input_file)
 language = languageParser.main(language_input_file)
 blockParser.blockProcessor(studyInfo)
 
+stimuli_identifiers = [args.soundidentifier, args.imageidentifier, args.videoidentifier]
+
 # 6. Write the outputs
-stimuli.output(stimuli_file)
+stimuli.output(stimuli_file,stimuli_identifiers)
 responses.output(responses_file)
 trialTemplates.output(trials_file)
 procedure.output(procedure_file)

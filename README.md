@@ -5,3 +5,4 @@ This repository contains the python codes that could generate corresponding Find
 	to execute: 
 			python3 motherboard.py study_design_cbtest.csv input_language_test.csv -din 'exp1' -dout 'exp1/cbtest_FF'
 			python3 motherboard.py study_design_fulltest.csv input_language_test.csv -din 'exp1' -dout 'exp1/fulltest_FF'
+			python3 motherboard.py study_design_fulltest.csv input_language_test.csv -din 'exp1' -dout 'exp1/fulltest_FF' -sdi '_harmony1' -imi '_harmony1'

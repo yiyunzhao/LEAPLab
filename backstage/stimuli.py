@@ -136,10 +136,24 @@ def lumi():
 
     return [a.name, fb.name, e.name]
 
-def output(stimuli_file):
+def output(stimuli_file,stimuli_identifiers):
     # get set of attributes across all stimuli
     stim_headers = set()
     for n, o in stimulus_objects.items(): # n = keys (names), o = values (objects)
+        #print("before:",o.content)
+        soundid, imageid, videoid = stimuli_identifiers
+        if soundid:
+            if '.mp3' in o.content:
+                o.content = o.content.replace('.mp3',soundid+'.mp3')
+        if imageid:
+            if '.png' in o.content:
+                o.content = o.content.replace('.png',soundid+'.png')
+        if videoid:
+            if '.mp4' in o.content:
+                o.content = o.content.replace('.mp4',soundid+'.mp4')
+        #print("after:",o.content)
+        #print('\n')
+                                       
         for attr in dir(o): # dir(o) gets a list of all attributes for object 'o'
             if attr.startswith('_'): # lots of Python inherent attributes, all have leading '_' or '__'
                 continue

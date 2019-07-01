@@ -18,6 +18,7 @@
 ## REQUIRED MODULES
 import re, ntpath
 from backstage import languageParser as LP, errors
+from backstage import praat
 # WHen we import languageParser, we can call a series of variables: 
 # nouns, adjectives, verbs, adpositons, case_markers, word_orders, pp_types, pp_norm, LanguageInputDetails, LexiconTypeDic
 
@@ -331,14 +332,25 @@ def ReorderSentence(my_sentence, wordorder,line_number):
     except:
         raise Exception("One of the element in sentence (Subject, Verb, Object) is invalid so it cannot be aggregated")
     return orderedSent, wordorder
-    
+
+
+def ReorderSentence_nocat(my_sentence, wordorder):
+    sentDic = dict(zip('SOV',my_sentence))
+    mysent = [sentDic[i] for i in wordorder.upper()]
+    try:
+        orderedSent = mysent
+    except:
+        raise Exception("One of the element in sentence (Subject, Verb, Object) is invalid so it cannot be aggregated")
+    return orderedSent
 
 def Sentence(sentence, wordorder, CaseMarker = None, position=None, PpType = None, PpNom = None, line_number = None):
     """Parse a phrase or sentences noun into component words and rebuild into Lumese"""
     """ didn't pass the order information yet, probably for the future use (e.g.,case marking on complex Nouns)"""
     
     my_sentence = ParseSentence(sentence, CaseMarker, position, PpType, PpNom,line_number)
-    #print("mysent:",my_sentence)
+    #print("mysent:",my_sentence, wordorder)
+    #print(ReorderSentence_nocat(my_sentence,wordorder))
+    praat.praat_content.append(ReorderSentence_nocat(my_sentence,wordorder))
     audio,order = ReorderSentence(my_sentence, wordorder,line_number)
     #print("audio:",audio)
     return audio, order

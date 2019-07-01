@@ -225,6 +225,44 @@ def create_choices(name,indx,trial,ling_unit,stimuli_nature,feedback, **kwargs):
 	return response_collection
 
 
+
+def create_choices_doer(name,indx,trial,ling_unit,stimuli_nature,feedback, **kwargs):
+	feedback = feedback_checker(trial,feedback)
+	vid = trial[:2]
+
+	response_collection = None
+	stim_collection =[]
+	if stimuli_nature == 'image':
+		for i in vid:
+			vis = stimuli.image(i)
+			stim_collection.append(vis)
+		instruction = 'Click on the doer of the action'
+		response_collection = responses.create_AFC(stim_collection, stimuli_nature,instruction,feedback=feedback,**kwargs)
+
+	elif stimuli_nature == 'video':
+		for i in vid:
+			vis = stimuli.video(i)
+			stim_collection.append(vis)
+		instruction = 'Click on the video below that matches the word I say:'
+		response_collection = responses.create_AFC(stim_collection, stimuli_nature,instruction,feedback=feedback,**kwargs)
+	else:
+		raise Exception('Invalid visual stimuli nature: (image or video)')
+
+	return response_collection
+
+
+def create_responses(foil,name,indx,trial,ling_unit,stimuli_nature,feedback, **kwargs):
+	"""
+	Special methods for different foils 
+	"""
+
+	if foil.lower() == 'doer':
+		resps = create_choices_doer(name,indx,trial,ling_unit,stimuli_nature,feedback, **kwargs)
+	else:
+		resps = create_choices(name,indx,trial,ling_unit,stimuli_nature,feedback, **kwargs)
+	return resps
+
+
 def instruction(name, content):
 	stim = stimuli.Alienlumi()
 	instr_stimulus = stimuli.text(name, content) # creates the stimulus object
@@ -412,8 +450,6 @@ def learn(content,name,need_text,**kwargs):
 	ling_unit = normalizeLingUnit(ling_unit)
 	block_info = [name, repeat, ling_unit, feedback, need_text]
 
-
-
 	# process trials 
 	# create trial name 
 	learn_template_name = '_'.join([name,ling_unit,'trial'])
@@ -487,7 +523,9 @@ def understand(content,name,need_text,**kwargs):
 			this_trial_name = '_'.join([name,ling_unit,'trial',str(indx),trial[0]])
 			trig, condition = trial[11],trial[12]
 			this_trial_stimuli = create_stimuli(name,trial,ling_unit, None, need_text)
-			this_trial_response = create_choices(name,indx,trial,ling_unit,stimuli_nature,feedback=feedback)
+
+			this_trial_response = create_responses(foil,name,indx,trial,ling_unit,stimuli_nature,feedback, **kwargs)
+			#this_trial_response = create_choices(name,indx,trial,ling_unit,stimuli_nature,feedback=feedback)
 			trialTemplates.comprehension(this_trial_name, this_trial_stimuli, this_trial_response,need_text)
 			main.append(this_trial_name)
 

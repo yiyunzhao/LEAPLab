@@ -140,22 +140,15 @@
 			]
 		},
 		"understand4":{
+			"cover_trials":[
+				"understand4_instr1_Trial"
+			],
 			"pattern":{
 				"order":"random"
 			},
 			"trial_templates":[
-				"understand4_Sentences_trial_0_chef",
 				"understand4_Sentences_trial_1_chef",
-				"understand4_Sentences_trial_2_chef",
-				"understand4_Sentences_trial_3_chef",
-				"understand4_Sentences_trial_4_chef",
-				"understand4_Sentences_trial_5_chef",
-				"understand4_Sentences_trial_6_refOnRedSkateboard",
-				"understand4_Sentences_trial_7_refOnRedSkateboard",
-				"understand4_Sentences_trial_8_refOnRedSkateboard",
-				"understand4_Sentences_trial_9_refOnRedSkateboard",
-				"understand4_Sentences_trial_10_refOnRedSkateboard",
-				"understand4_Sentences_trial_11_refOnRedSkateboard"
+				"understand4_Sentences_trial_2_refOnRedSkateboard"
 			]
 		}
 	},
